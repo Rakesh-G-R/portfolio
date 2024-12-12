@@ -6,7 +6,7 @@ let assetPrefix = '';
 let basePath = '';
 
 if (isGithubActions) {
-  const repo = process.env.GITHUB_REPOSITORY?.replace(/.*?\//, ''); // Extract repository name
+  const repo = 'portfolio'; // Extract repository name
   assetPrefix = `/${repo}/`;
   basePath = `/${repo}`;
 }
