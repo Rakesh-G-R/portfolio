@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { sendEmail } from '../actions/sendEmail'
 import { Loader2 } from 'lucide-react'
 
 export default function Contact() {
@@ -9,26 +8,39 @@ export default function Contact() {
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setIsLoading(true)
-    setFormStatus(null)
+    event.preventDefault();
+    setIsLoading(true);
+    setFormStatus(null);
 
-    const form = event.currentTarget
-    const formData = new FormData(form)
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
     try {
-      const result = await sendEmail(formData)
+      const response = await fetch('/api/sendEmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          email: formData.get('email'),
+          message: formData.get('message'),
+        }),
+      });
+
+      const result = await response.json();
 
       if (result.success) {
-        setFormStatus({ type: 'success', message: result.message })
-        form.reset()
+        setFormStatus({ type: 'success', message: result.message });
+        form.reset();
       } else {
-        setFormStatus({ type: 'error', message: `${result.message} ${result.error ? `Error details: ${result.error}` : ''}` })
+        setFormStatus({ type: 'error', message: `${result.message} ${result.error ? `Error details: ${result.error}` : ''}` });
       }
     } catch (error) {
-      setFormStatus({ type: 'error', message: 'An unexpected error occurred. Please try again.' })
+      console.log(error);
+      setFormStatus({ type: 'error', message: 'An unexpected error occurred. Please try again.' });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
